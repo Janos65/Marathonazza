@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-cream text-ink font-sans antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-serif;
+  }
+  /* tabular figures for all score numbers */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ---------- Animations (DESIGN.md) ---------- */
+@keyframes slideInRow {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes goldPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(201, 168, 76, 0);
+  }
+  50% {
+    box-shadow: 0 0 16px 4px rgba(201, 168, 76, 0.3);
+  }
+}
+@keyframes borderPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(27, 67, 50, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(27, 67, 50, 0.3);
+  }
+}
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+@keyframes bounceDown {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+.leaderboard-row {
+  animation: slideInRow 0.3s ease forwards;
+}
+.rank-1 {
+  animation: goldPulse 2s ease-in-out infinite;
+}
+.btn-submit-active {
+  animation: borderPulse 1.5s ease-in-out infinite;
+}
+.shake {
+  animation: shake 0.4s ease;
+}
+.scroll-indicator {
+  animation: bounceDown 1.8s ease-in-out infinite;
+}
+
+/* ---------- Decoration ---------- */
+.bg-golf-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='8' fill='none' stroke='%231B4332' stroke-width='0.5' opacity='0.08'/%3E%3C/svg%3E");
+}
+
+/* hide scrollbar on horizontal special-card scroller */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
