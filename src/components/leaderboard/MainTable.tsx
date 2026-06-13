@@ -41,11 +41,11 @@ export default function MainTable({ rows }: Props) {
             <th className="px-3 py-3 text-left">Coppia</th>
             {ROUNDS.map((r) => (
               <th key={r} className="px-2 py-3 text-center">
-                R{r}
+                G{r}
               </th>
             ))}
             <th className="px-2 py-3 text-center">HCP</th>
-            <th className="px-3 py-3 text-center">Netto</th>
+            <th className="px-3 py-3 text-center">Totale</th>
           </tr>
         </thead>
         <tbody>

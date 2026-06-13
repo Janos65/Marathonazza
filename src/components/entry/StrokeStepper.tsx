@@ -2,7 +2,7 @@ import { Minus, Plus } from 'lucide-react'
 
 interface Props {
   value: number | null
-  onChange: (value: number) => void
+  onChange: (value: number | null) => void
   min?: number
   max?: number
   disabled?: boolean
@@ -20,7 +20,9 @@ export default function StrokeStepper({
   function dec() {
     if (disabled) return
     if (current == null) return // nothing to decrement yet
-    onChange(Math.max(min, current - 1))
+    // at the minimum, pressing − clears the hole (back to empty)
+    if (current <= min) onChange(null)
+    else onChange(current - 1)
   }
   function inc() {
     if (disabled) return
@@ -40,7 +42,7 @@ export default function StrokeStepper({
       <button
         type="button"
         onClick={dec}
-        disabled={disabled || current == null || current <= min}
+        disabled={disabled || current == null}
         className={btn}
         aria-label="Diminuisci"
       >

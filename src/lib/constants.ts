@@ -15,6 +15,14 @@ export const HOLES = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const
 export const TOTAL_ROUNDS = 5
 export const NUM_HOLES = 9
 
+/** Fixed event date (15 June 2026). */
+export const EVENT_DATE = new Date(2026, 5, 15)
+export const EVENT_DATE_LABEL = EVENT_DATE.toLocaleDateString('it-IT', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+})
+
 /** sessionStorage key for the unlocked group code on /enter */
 export const CODE_STORAGE_KEY = 'mz_code'
 

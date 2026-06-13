@@ -16,7 +16,7 @@ interface Props {
   submitted: boolean
   birdieCount: number
   submittedRoundsCount: number
-  onSetStroke: (hole: number, strokes: number) => void
+  onSetStroke: (hole: number, strokes: number | null) => void
   onSubmit: () => void
 }
 
