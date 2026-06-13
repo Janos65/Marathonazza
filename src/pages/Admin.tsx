@@ -13,7 +13,7 @@ import ScoreManager from '../components/admin/ScoreManager'
 export default function Admin() {
   const { pairs, loading: pairsLoading, refetch: refetchPairs } = usePairs()
   const { parByHole, mapByHole, loading: holesLoading, updatePar, updateMap } = useHoles()
-  const { winners, setWinner } = useSpecials()
+  const { winners, setWinner, allPlayers } = useSpecials()
 
   if (pairsLoading || holesLoading) return <FullPageSpinner />
 
@@ -62,23 +62,23 @@ export default function Admin() {
       <GoldDivider />
 
       <section>
-        <SectionHeading hint="Imposta manualmente i vincitori delle gare a giudizio.">
-          Vincitori Gare Speciali
+        <SectionHeading hint="Imposta manualmente i vincitori dei premi a giudizio (giocatore singolo).">
+          Vincitori Premi Speciali
         </SectionHeading>
         <div className="grid gap-3 sm:grid-cols-2">
           <WinnerSelect
             title={COMPETITION_LABELS.closest_to_line}
             subtitle="Buca 7 — prima pallina più vicina alla linea di metà fairway"
-            pairs={pairs}
-            currentWinnerId={winners.closest_to_line}
-            onSet={(id) => setWinner('closest_to_line', id)}
+            players={allPlayers}
+            currentWinnerName={winners.closest_to_line}
+            onSet={(name) => setWinner('closest_to_line', name)}
           />
           <WinnerSelect
             title={COMPETITION_LABELS.drive_in_contest}
             subtitle="Buca 9 — drive più lungo nell’ultimo giro (Giro 5)"
-            pairs={pairs}
-            currentWinnerId={winners.drive_in_contest}
-            onSet={(id) => setWinner('drive_in_contest', id)}
+            players={allPlayers}
+            currentWinnerName={winners.drive_in_contest}
+            onSet={(name) => setWinner('drive_in_contest', name)}
           />
         </div>
       </section>

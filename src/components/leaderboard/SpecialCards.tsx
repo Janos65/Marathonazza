@@ -43,29 +43,31 @@ function CardShell({
 }
 
 export default function SpecialCards() {
-  const { pairs, pairById, ntpLeader, birdieStandings, winners, setWinner } = useSpecials()
+  const { allPlayers, ntpLeader, birdieStandings, winners, setWinner } = useSpecials()
 
   function WinnerPicker({ type }: { type: CompetitionType }) {
-    const winnerId = winners[type]
-    const winner = winnerId ? pairById.get(winnerId) : undefined
+    const winnerName = winners[type]
+    const winnerPhoto = winnerName
+      ? allPlayers.find((p) => p.name === winnerName)?.photoUrl
+      : null
     return (
       <>
-        {winner ? (
+        {winnerName ? (
           <div className="flex items-center gap-2.5">
-            <Avatar name={winner.name} photoUrl={winner.photo_url} size={40} ring="gold" />
-            <span className="text-sm font-semibold text-green-800">{winner.name}</span>
+            <Avatar name={winnerName} photoUrl={winnerPhoto} size={40} ring="gold" />
+            <span className="text-sm font-semibold text-green-800">{winnerName}</span>
           </div>
         ) : (
           <p className="text-sm italic text-gray-400">Da assegnare</p>
         )}
         <select
-          value={winnerId ?? ''}
+          value={winnerName ?? ''}
           onChange={(e) => setWinner(type, e.target.value || null)}
           className="mt-auto h-10 rounded-lg border border-green-100 bg-white px-2 text-sm focus:border-green-600 focus:outline-none"
         >
           <option value="">— Seleziona vincitore —</option>
-          {pairs.map((p) => (
-            <option key={p.id} value={p.id}>
+          {allPlayers.map((p, i) => (
+            <option key={i} value={p.name}>
               {p.name}
             </option>
           ))}
@@ -135,9 +137,9 @@ export default function SpecialCards() {
         <WinnerPicker type="closest_to_line" />
       </CardShell>
 
-      {/* Drive in Contest */}
+      {/* Driving contest */}
       <CardShell
-        title="Drive in Contest"
+        title="Driving contest"
         subtitle="Drive più lungo alla buca 9 nell’ultimo giro (Solo giro 5)"
         icon={<Ruler size={22} />}
       >

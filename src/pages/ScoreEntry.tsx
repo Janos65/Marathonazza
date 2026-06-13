@@ -10,18 +10,26 @@ import { usePairs, pairsForCode } from '../hooks/usePairs'
 import { useHoles } from '../hooks/useHoles'
 import { useRoundScores } from '../hooks/useRoundScores'
 import { useSpecials } from '../hooks/useSpecials'
+import { useSubstitutes } from '../hooks/useSubstitutes'
 import { supabase } from '../lib/supabase'
-import { CODE_STORAGE_KEY, groupLabel } from '../lib/constants'
+import { CODE_STORAGE_KEY, groupLabel, isSubstituteCode } from '../lib/constants'
+import type { PlayerOption } from '../lib/types'
 
 export default function ScoreEntry() {
   const [code, setCode] = useState<string | null>(() => sessionStorage.getItem(CODE_STORAGE_KEY))
   const [round, setRound] = useState(1)
 
+  const isSubstitute = !!code && isSubstituteCode(code)
+
   const { pairs, loading: pairsLoading } = usePairs()
   const { parByHole, loading: holesLoading } = useHoles()
+  const { substitutes, loading: subsLoading } = useSubstitutes()
   const { birdieCountForPair, ntpEntries, addNtp } = useSpecials()
 
-  const groupPairs = useMemo(() => (code ? pairsForCode(pairs, code) : []), [pairs, code])
+  const groupPairs = useMemo(
+    () => (code && !isSubstitute ? pairsForCode(pairs, code) : []),
+    [pairs, code, isSubstitute],
+  )
   const pairIds = useMemo(() => groupPairs.map((p) => p.id), [groupPairs])
 
   const { scores, isSubmitted, setStroke, submitRound } = useRoundScores(pairIds, round)
@@ -50,29 +58,63 @@ export default function ScoreEntry() {
     return <CodeGate onUnlock={setCode} />
   }
 
-  if (pairsLoading || holesLoading) return <FullPageSpinner />
-
   function logout() {
     sessionStorage.removeItem(CODE_STORAGE_KEY)
     setCode(null)
   }
 
-  const groupEntries = ntpEntries(pairIds)
+  const Header = (
+    <div className="mb-5 flex items-center justify-between">
+      <Logo height={28} />
+      {!isSubstitute && <SegmentedRounds value={round} onChange={setRound} prefix="G" />}
+      <button
+        onClick={logout}
+        className="grid h-9 w-9 place-items-center rounded-lg text-gray-400 hover:bg-green-50 hover:text-green-800"
+        aria-label="Esci"
+      >
+        <LogOut size={18} />
+      </button>
+    </div>
+  )
+
+  // ---- Staffettisti mode: NTP entry only ----
+  if (isSubstitute) {
+    if (subsLoading) return <FullPageSpinner />
+    const subPlayers: PlayerOption[] = substitutes.map((s) => ({
+      name: s.name,
+      pairId: null,
+      photoUrl: null,
+    }))
+    const subNames = substitutes.map((s) => s.name)
+    return (
+      <div className="py-6">
+        {Header}
+        <h1 className="mb-1 font-serif text-2xl font-bold text-green-800">{groupLabel(code)}</h1>
+        <p className="mb-4 text-sm text-gray-500">
+          Sostituti — solo inserimento Nearest to the Pin (Buca 2).
+        </p>
+        <NearestPinForm
+          players={subPlayers}
+          entries={ntpEntries(subNames)}
+          defaultRound={1}
+          onAdd={addNtp}
+        />
+      </div>
+    )
+  }
+
+  // ---- Normal group mode ----
+  if (pairsLoading || holesLoading) return <FullPageSpinner />
+
+  const groupPlayers: PlayerOption[] = groupPairs.flatMap((p) => [
+    { name: p.player1_name, pairId: p.id, photoUrl: p.photo_url },
+    { name: p.player2_name, pairId: p.id, photoUrl: p.photo_url },
+  ])
+  const groupNames = groupPlayers.map((p) => p.name)
 
   return (
     <div className="py-6">
-      <div className="mb-5 flex items-center justify-between">
-        <Logo height={28} />
-        <SegmentedRounds value={round} onChange={setRound} prefix="G" />
-        <button
-          onClick={logout}
-          className="grid h-9 w-9 place-items-center rounded-lg text-gray-400 hover:bg-green-50 hover:text-green-800"
-          aria-label="Esci"
-        >
-          <LogOut size={18} />
-        </button>
-      </div>
-
+      {Header}
       <h1 className="mb-4 font-serif text-2xl font-bold text-green-800">{groupLabel(code)}</h1>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -97,8 +139,8 @@ export default function ScoreEntry() {
 
       <div className="mt-6">
         <NearestPinForm
-          pairs={groupPairs}
-          entries={groupEntries}
+          players={groupPlayers}
+          entries={ntpEntries(groupNames)}
           defaultRound={round}
           onAdd={addNtp}
         />

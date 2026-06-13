@@ -1,31 +1,22 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Flag } from 'lucide-react'
 import Button from '../ui/Button'
 import { ROUNDS } from '../../lib/constants'
-import type { NearestToPin, Pair } from '../../lib/types'
-
-interface PlayerOption {
-  pairId: string
-  name: string
-}
+import type { NearestToPin, PlayerOption } from '../../lib/types'
 
 interface Props {
-  pairs: Pair[]
+  players: PlayerOption[]
   entries: NearestToPin[]
   defaultRound: number
-  onAdd: (playerName: string, pairId: string, round: number, distanceCm: number) => Promise<void>
+  onAdd: (
+    playerName: string,
+    pairId: string | null,
+    round: number,
+    distanceCm: number,
+  ) => Promise<void>
 }
 
-export default function NearestPinForm({ pairs, entries, defaultRound, onAdd }: Props) {
-  const players = useMemo<PlayerOption[]>(
-    () =>
-      pairs.flatMap((p) => [
-        { pairId: p.id, name: p.player1_name },
-        { pairId: p.id, name: p.player2_name },
-      ]),
-    [pairs],
-  )
-
+export default function NearestPinForm({ players, entries, defaultRound, onAdd }: Props) {
   const [playerIdx, setPlayerIdx] = useState(0)
   const [distance, setDistance] = useState('')
   const [round, setRound] = useState(defaultRound)
@@ -37,6 +28,7 @@ export default function NearestPinForm({ pairs, entries, defaultRound, onAdd }: 
     const dist = Number(distance)
     if (!dist || dist <= 0) return
     const player = players[playerIdx]
+    if (!player) return
     setBusy(true)
     await onAdd(player.name, player.pairId, round, dist)
     setBusy(false)
@@ -110,7 +102,7 @@ export default function NearestPinForm({ pairs, entries, defaultRound, onAdd }: 
 
       {entries.length > 0 && (
         <div className="mt-4">
-          <p className="mb-1 text-xs font-semibold text-gray-500">Misure del gruppo</p>
+          <p className="mb-1 text-xs font-semibold text-gray-500">Misure inserite</p>
           <ul className="divide-y divide-green-50 text-sm">
             {entries.map((e) => (
               <li key={e.id} className="flex justify-between py-1.5">

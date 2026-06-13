@@ -25,7 +25,7 @@ export default function Leaderboard() {
       <GoldDivider />
 
       <section className="pb-6">
-        <h2 className="mb-4 font-serif text-3xl font-bold text-green-800">Gare Speciali</h2>
+        <h2 className="mb-4 font-serif text-3xl font-bold text-green-800">Premi Speciali</h2>
         <SpecialCards />
       </section>
     </div>

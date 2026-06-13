@@ -37,9 +37,16 @@ export interface Round {
 export interface NearestToPin {
   id: string
   player_name: string
-  pair_id: string
+  pair_id: string | null
   round_number: number
   distance_cm: number
+}
+
+export interface Substitute {
+  id: string
+  name: string
+  access_code: string
+  display_order: number | null
 }
 
 export type CompetitionType = 'closest_to_line' | 'drive_in_contest'
@@ -48,6 +55,14 @@ export interface SpecialWinner {
   id: string
   competition_type: CompetitionType
   winning_pair_id: string | null
+  winner_name: string | null
+}
+
+/** A single selectable player (pair member or substitute). */
+export interface PlayerOption {
+  name: string
+  pairId: string | null
+  photoUrl: string | null
 }
 
 /** Per-hole strokes map keyed by hole number (1..9). */

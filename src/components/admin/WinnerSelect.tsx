@@ -1,25 +1,24 @@
 import { useState } from 'react'
 import Button from '../ui/Button'
-import type { Pair } from '../../lib/types'
+import type { PlayerOption } from '../../lib/types'
 
 interface Props {
   title: string
   subtitle?: string
-  pairs: Pair[]
-  currentWinnerId: string | null
-  onSet: (pairId: string | null) => Promise<void>
+  players: PlayerOption[]
+  currentWinnerName: string | null
+  onSet: (name: string | null) => Promise<void>
 }
 
 export default function WinnerSelect({
   title,
   subtitle,
-  pairs,
-  currentWinnerId,
+  players,
+  currentWinnerName,
   onSet,
 }: Props) {
-  const [selected, setSelected] = useState<string>(currentWinnerId ?? '')
+  const [selected, setSelected] = useState<string>(currentWinnerName ?? '')
   const [busy, setBusy] = useState(false)
-  const currentName = pairs.find((p) => p.id === currentWinnerId)?.name
 
   async function save() {
     setBusy(true)
@@ -33,7 +32,7 @@ export default function WinnerSelect({
       {subtitle && <p className="mb-2 text-xs text-gray-500">{subtitle}</p>}
       <p className="mb-3 text-sm">
         Vincitore attuale:{' '}
-        <span className="font-semibold text-green-800">{currentName ?? 'Da assegnare'}</span>
+        <span className="font-semibold text-green-800">{currentWinnerName ?? 'Da assegnare'}</span>
       </p>
       <div className="flex flex-wrap items-center gap-2">
         <select
@@ -42,8 +41,8 @@ export default function WinnerSelect({
           className="h-11 flex-1 rounded-lg border border-green-100 bg-white px-3 text-sm focus:border-green-600 focus:outline-none"
         >
           <option value="">— Nessuno —</option>
-          {pairs.map((p) => (
-            <option key={p.id} value={p.id}>
+          {players.map((p, i) => (
+            <option key={i} value={p.name}>
               {p.name}
             </option>
           ))}

@@ -6,7 +6,9 @@ import type {
   HoleScore,
   NearestToPin,
   Pair,
+  PlayerOption,
   SpecialWinner,
+  Substitute,
 } from '../lib/types'
 
 export interface NtpLeader {
@@ -23,14 +25,16 @@ export interface BirdieStanding {
 
 export function useSpecials() {
   const [pairs, setPairs] = useState<Pair[]>([])
+  const [substitutes, setSubstitutes] = useState<Substitute[]>([])
   const [ntp, setNtp] = useState<NearestToPin[]>([])
   const [birdieScores, setBirdieScores] = useState<HoleScore[]>([])
   const [winnersRaw, setWinnersRaw] = useState<SpecialWinner[]>([])
   const [loading, setLoading] = useState(true)
 
   const refetch = useCallback(async () => {
-    const [pairsRes, ntpRes, birdieRes, winnersRes] = await Promise.all([
+    const [pairsRes, subsRes, ntpRes, birdieRes, winnersRes] = await Promise.all([
       supabase.from('pairs').select('*').order('display_order', { ascending: true }),
+      supabase.from('substitutes').select('*').order('display_order', { ascending: true }),
       supabase.from('nearest_to_pin').select('*').order('distance_cm', { ascending: true }),
       supabase
         .from('hole_scores')
@@ -40,6 +44,7 @@ export function useSpecials() {
       supabase.from('special_winners').select('*'),
     ])
     setPairs((pairsRes.data as Pair[]) ?? [])
+    setSubstitutes((subsRes.data as Substitute[]) ?? [])
     setNtp((ntpRes.data as NearestToPin[]) ?? [])
     setBirdieScores((birdieRes.data as HoleScore[]) ?? [])
     setWinnersRaw((winnersRes.data as SpecialWinner[]) ?? [])
@@ -71,6 +76,20 @@ export function useSpecials() {
     return m
   }, [pairs])
 
+  /** All individual people who can win a person-based prize. */
+  const allPlayers = useMemo<PlayerOption[]>(() => {
+    const fromPairs: PlayerOption[] = pairs.flatMap((p) => [
+      { name: p.player1_name, pairId: p.id, photoUrl: p.photo_url },
+      { name: p.player2_name, pairId: p.id, photoUrl: p.photo_url },
+    ])
+    const fromSubs: PlayerOption[] = substitutes.map((s) => ({
+      name: s.name,
+      pairId: null,
+      photoUrl: null,
+    }))
+    return [...fromPairs, ...fromSubs]
+  }, [pairs, substitutes])
+
   const ntpLeader: NtpLeader | null = useMemo(() => {
     if (ntp.length === 0) return null
     const best = ntp[0] // already sorted asc by distance
@@ -78,18 +97,23 @@ export function useSpecials() {
       player_name: best.player_name,
       distance_cm: best.distance_cm,
       round_number: best.round_number,
-      pair: pairById.get(best.pair_id),
+      pair: best.pair_id ? pairById.get(best.pair_id) : undefined,
     }
   }, [ntp, pairById])
 
   const ntpEntries = useCallback(
-    (filterPairIds?: string[]) =>
-      filterPairIds ? ntp.filter((n) => filterPairIds.includes(n.pair_id)) : ntp,
+    (filterPlayerNames?: string[]) =>
+      filterPlayerNames ? ntp.filter((n) => filterPlayerNames.includes(n.player_name)) : ntp,
     [ntp],
   )
 
   const addNtp = useCallback(
-    async (player_name: string, pair_id: string, round_number: number, distance_cm: number) => {
+    async (
+      player_name: string,
+      pair_id: string | null,
+      round_number: number,
+      distance_cm: number,
+    ) => {
       await supabase
         .from('nearest_to_pin')
         .insert({ player_name, pair_id, round_number, distance_cm })
@@ -116,21 +140,22 @@ export function useSpecials() {
     [birdieCountByPair],
   )
 
+  /** competition_type -> winner person name (or null). */
   const winners = useMemo(() => {
     const m: Record<CompetitionType, string | null> = {
       closest_to_line: null,
       drive_in_contest: null,
     }
-    for (const w of winnersRaw) m[w.competition_type] = w.winning_pair_id
+    for (const w of winnersRaw) m[w.competition_type] = w.winner_name
     return m
   }, [winnersRaw])
 
   const setWinner = useCallback(
-    async (type: CompetitionType, pairId: string | null) => {
+    async (type: CompetitionType, name: string | null) => {
       await supabase
         .from('special_winners')
         .upsert(
-          { competition_type: type, winning_pair_id: pairId, set_at: new Date().toISOString() },
+          { competition_type: type, winner_name: name, winning_pair_id: null, set_at: new Date().toISOString() },
           { onConflict: 'competition_type' },
         )
     },
@@ -139,7 +164,9 @@ export function useSpecials() {
 
   return {
     pairs,
+    substitutes,
     pairById,
+    allPlayers,
     loading,
     ntpLeader,
     ntpEntries,

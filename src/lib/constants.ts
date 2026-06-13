@@ -10,6 +10,9 @@ export const ACCESS_CODES = [
   'BUCA7',
 ] as const
 
+/** Special code for the staffettisti (substitutes): NTP entry only. */
+export const SUBSTITUTE_CODE = 'BUCA10'
+
 export const ROUNDS = [1, 2, 3, 4, 5] as const
 export const HOLES = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const
 export const TOTAL_ROUNDS = 5
@@ -42,24 +45,30 @@ export const SPECIAL_HOLES: Record<number, SpecialHoleMeta> = {
   2: { hole: 2, key: 'ntp', label: 'Nearest to the Pin', emoji: '📍' },
   7: { hole: 7, key: 'line', label: 'Closest to the Line', emoji: '⊕' },
   8: { hole: 8, key: 'birdie', label: 'BirdieCup', emoji: '🐦' },
-  9: { hole: 9, key: 'drive', label: 'Drive in Contest', emoji: '📏' },
+  9: { hole: 9, key: 'drive', label: 'Driving contest', emoji: '📏' },
 }
 
 export const COMPETITION_LABELS: Record<CompetitionType, string> = {
   closest_to_line: 'Closest to the Line',
-  drive_in_contest: 'Drive in Contest',
+  drive_in_contest: 'Driving contest',
 }
 
 export function normalizeCode(input: string): string {
   return input.trim().toUpperCase()
 }
 
-export function isValidCode(input: string): boolean {
-  return (ACCESS_CODES as readonly string[]).includes(normalizeCode(input))
+export function isSubstituteCode(input: string): boolean {
+  return normalizeCode(input) === SUBSTITUTE_CODE
 }
 
-/** Group label shown after unlocking, e.g. "Gruppo Buca 3". */
+export function isValidCode(input: string): boolean {
+  const c = normalizeCode(input)
+  return (ACCESS_CODES as readonly string[]).includes(c) || c === SUBSTITUTE_CODE
+}
+
+/** Group label shown after unlocking, e.g. "Gruppo Buca 3" or "Staffettisti". */
 export function groupLabel(code: string): string {
+  if (isSubstituteCode(code)) return 'Staffettisti'
   const n = normalizeCode(code).replace('BUCA', '')
   return `Gruppo Buca ${n}`
 }
