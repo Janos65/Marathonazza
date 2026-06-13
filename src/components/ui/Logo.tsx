@@ -30,7 +30,11 @@ export default function Logo({ height = 36, light = false, className = '' }: Pro
     <img
       src="/logo.png"
       alt="Marathonazza"
-      style={{ height }}
+      style={{
+        height,
+        // black silhouette -> render white on dark backgrounds
+        filter: light ? 'brightness(0) invert(1)' : undefined,
+      }}
       className={`w-auto object-contain ${className}`}
       onError={() => setErrored(true)}
     />
