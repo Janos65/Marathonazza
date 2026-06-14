@@ -89,7 +89,7 @@ INSERT INTO pairs (name, player1_name, player2_name, handicap, starting_hole, ac
 
 -- BUCA 3
 INSERT INTO pairs (name, player1_name, player2_name, handicap, starting_hole, access_code, display_order) VALUES
-('Costner / Bosetto', 'Alberto Costner', 'Paolo Bosetto', 6, 3, 'BUCA3', 5),
+('Cosner / Bosetto', 'Alberto Cosner', 'Paolo Bosetto', 6, 3, 'BUCA3', 5),
 ('Panzan / Coletto', 'Roberto Panzan', 'Laura Coletto', 7, 3, 'BUCA3', 6);
 
 -- BUCA 4
