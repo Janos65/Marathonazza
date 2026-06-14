@@ -41,8 +41,7 @@ export default function Hero({ currentRound, pairsCount, onScrollDown }: Props) 
           muted
           playsInline
           onError={() => setVideoOk(false)}
-          className="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2 object-cover"
-          style={{ minWidth: '100%', minHeight: '100%', width: 'auto', height: 'auto' }}
+          className="absolute inset-0 z-0 h-full w-full object-cover"
         >
           <source src={VIDEO_SRC} type="video/mp4" />
         </video>
