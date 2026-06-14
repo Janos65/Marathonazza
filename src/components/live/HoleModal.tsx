@@ -43,30 +43,31 @@ export default function HoleModal({ hole, par, mapUrl, onClose, onSavePar }: Pro
         }}
       >
         {/* map / placeholder */}
-        <div
-          className="relative flex h-[230px] items-center justify-center"
-          style={
-            mapUrl
-              ? undefined
-              : { background: 'repeating-linear-gradient(135deg, #123726 0 14px, #0f2e1f 14px 28px)' }
-          }
-        >
-          {mapUrl ? (
-            <img src={mapUrl} alt={`Mappa buca ${hole}`} className="h-full w-full object-cover" />
-          ) : (
-            <>
-              <div className="absolute inset-0" style={{ background: 'radial-gradient(80% 80% at 50% 40%, rgba(116,198,157,.12), transparent 70%)' }} />
-              <div className="text-center">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(116,198,157,.55)" strokeWidth="1.5">
-                  <path d="M5 21V4l11 3-7 2v12" />
-                  <circle cx="5" cy="21" r="1.4" fill="rgba(116,198,157,.55)" />
-                </svg>
-                <div className="mt-3 font-mono text-[10px] tracking-[3px] text-[#f4efe373]">MAPPA BUCA {hole}</div>
-                <div className="mt-1.5 text-[11px] text-[#f4efe34d]">caricabile dall'admin</div>
-              </div>
-            </>
-          )}
-        </div>
+        {mapUrl ? (
+          <div className="flex items-center justify-center" style={{ background: '#0a1e13' }}>
+            <img
+              src={mapUrl}
+              alt={`Mappa buca ${hole}`}
+              className="block h-auto w-full object-contain"
+              style={{ maxHeight: '72vh' }}
+            />
+          </div>
+        ) : (
+          <div
+            className="relative flex h-[230px] items-center justify-center"
+            style={{ background: 'repeating-linear-gradient(135deg, #123726 0 14px, #0f2e1f 14px 28px)' }}
+          >
+            <div className="absolute inset-0" style={{ background: 'radial-gradient(80% 80% at 50% 40%, rgba(116,198,157,.12), transparent 70%)' }} />
+            <div className="text-center">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(116,198,157,.55)" strokeWidth="1.5">
+                <path d="M5 21V4l11 3-7 2v12" />
+                <circle cx="5" cy="21" r="1.4" fill="rgba(116,198,157,.55)" />
+              </svg>
+              <div className="mt-3 font-mono text-[10px] tracking-[3px] text-[#f4efe373]">MAPPA BUCA {hole}</div>
+              <div className="mt-1.5 text-[11px] text-[#f4efe34d]">caricabile dall'admin</div>
+            </div>
+          </div>
+        )}
 
         {/* body */}
         <div className="px-[26px] pb-7 pt-6">
