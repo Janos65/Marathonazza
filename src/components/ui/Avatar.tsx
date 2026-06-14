@@ -60,7 +60,8 @@ export default function Avatar({
         className={`shrink-0 overflow-hidden rounded-full ${canEnlarge ? 'cursor-zoom-in' : ''} ${className}`}
         style={{
           width: size,
-          height: size,
+          maxWidth: '100%',
+          aspectRatio: '1 / 1',
           border: `${borderWidth}px solid ${border}`,
           boxShadow: '0 8px 20px rgba(0,0,0,0.35)',
         }}

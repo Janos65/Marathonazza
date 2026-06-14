@@ -24,7 +24,7 @@ function Side({ row, place }: { row: LeaderboardRow | undefined; place: 2 | 3 })
   if (!row) return <div />
   return (
     <div
-      className="relative rounded-[20px] px-4 pb-6 pt-[26px] text-center"
+      className="relative rounded-[20px] px-2.5 pb-6 pt-[26px] text-center sm:px-4"
       style={{
         background: `linear-gradient(180deg, ${tint}, rgba(11,32,21,.6))`,
         border: `1px solid ${border}`,
@@ -38,7 +38,7 @@ function Side({ row, place }: { row: LeaderboardRow | undefined; place: 2 | 3 })
       >
         {place}
       </div>
-      <div className="mx-auto mb-3.5 mt-2 w-fit">
+      <div className="mx-auto mb-3.5 mt-2 w-full max-w-[72px]">
         <Avatar name={row.pair.name} photoUrl={row.pair.photo_url} size={72} ringColor={ring} />
       </div>
       <div className="font-serif text-[clamp(15px,1.7vw,18px)] font-semibold leading-tight text-[#F4EFE3]">
@@ -65,7 +65,7 @@ export default function Podium({ rows }: Props) {
       {/* 1st */}
       {first && (
         <div
-          className="relative rounded-[22px] px-[18px] pb-[30px] pt-[34px] text-center"
+          className="relative rounded-[22px] px-2.5 pb-[30px] pt-[34px] text-center sm:px-[18px]"
           style={{
             background: 'linear-gradient(180deg, rgba(232,206,126,.2), rgba(13,43,29,.78))',
             border: '1.5px solid rgba(232,206,126,.6)',
@@ -73,7 +73,7 @@ export default function Podium({ rows }: Props) {
           }}
         >
           <div className="absolute left-1/2 top-[-20px] -translate-x-1/2">{CROWN}</div>
-          <div className="mx-auto mb-4 mt-4 w-fit">
+          <div className="mx-auto mb-4 mt-4 w-full max-w-[96px]">
             <Avatar name={first.pair.name} photoUrl={first.pair.photo_url} size={96} ringColor="#E8CE7E" />
           </div>
           <div className="font-serif text-[clamp(18px,2.2vw,24px)] font-bold leading-tight text-[#FBF7EC]">
