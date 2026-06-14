@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { LogOut } from 'lucide-react'
-import Logo from '../components/ui/Logo'
 import { FullPageSpinner } from '../components/ui/Spinner'
 import SegmentedRounds from '../components/ui/SegmentedRounds'
 import CodeGate from '../components/entry/CodeGate'
@@ -14,6 +12,13 @@ import { useSubstitutes } from '../hooks/useSubstitutes'
 import { supabase } from '../lib/supabase'
 import { CODE_STORAGE_KEY, groupLabel, isSubstituteCode } from '../lib/constants'
 import type { PlayerOption } from '../lib/types'
+
+const GearIcon = (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" strokeWidth="2.4"><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /></svg>
+)
+const ExitIcon = (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>
+)
 
 export default function ScoreEntry() {
   const [code, setCode] = useState<string | null>(() => sessionStorage.getItem(CODE_STORAGE_KEY))
@@ -34,7 +39,6 @@ export default function ScoreEntry() {
 
   const { scores, isSubmitted, setStroke, submitRound } = useRoundScores(pairIds, round)
 
-  // submitted rounds count per pair (for the BirdieCup denominator)
   const [submittedCounts, setSubmittedCounts] = useState<Record<string, number>>({})
   const refreshCounts = useCallback(async () => {
     if (pairIds.length === 0) return
@@ -55,7 +59,11 @@ export default function ScoreEntry() {
   }, [refreshCounts, round])
 
   if (!code) {
-    return <CodeGate onUnlock={setCode} />
+    return (
+      <div style={{ minHeight: 'calc(100vh - 64px)', background: 'radial-gradient(130% 60% at 50% 0%, #FBF8F0, #F1EADB 90%)' }}>
+        <CodeGate onUnlock={setCode} />
+      </div>
+    )
   }
 
   function logout() {
@@ -63,48 +71,43 @@ export default function ScoreEntry() {
     setCode(null)
   }
 
-  const Header = (
-    <div className="mb-5 flex items-center justify-between">
-      <Logo height={28} />
-      {!isSubstitute && <SegmentedRounds value={round} onChange={setRound} prefix="G" />}
-      <button
-        onClick={logout}
-        className="grid h-9 w-9 place-items-center rounded-lg text-gray-400 hover:bg-green-50 hover:text-green-800"
-        aria-label="Esci"
-      >
-        <LogOut size={18} />
-      </button>
+  const SubHeader = (
+    <div
+      className="sticky z-30 flex flex-wrap items-center justify-between gap-3.5 px-[clamp(14px,4vw,40px)] py-3.5 backdrop-blur"
+      style={{ top: 64, background: 'rgba(251,248,240,.9)', borderBottom: '1px solid #E7E0D0' }}
+    >
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-[7px] rounded-[30px] px-3.5 py-[7px] text-[#F4EFE6]" style={{ background: '#1B4332' }}>
+          {GearIcon}
+          <span className="whitespace-nowrap text-[14px] font-bold">{groupLabel(code!)}</span>
+        </div>
+        <button onClick={logout} className="flex items-center gap-[5px] text-[12.5px] font-semibold text-[#8a8470] hover:text-[#14271B]">
+          {ExitIcon}
+          Esci
+        </button>
+      </div>
+      {!isSubstitute && <SegmentedRounds value={round} onChange={setRound} theme="light" />}
     </div>
   )
 
-  // ---- Staffettisti mode: NTP entry only ----
+  // ---- Staffettisti mode ----
   if (isSubstitute) {
-    if (subsLoading) return <FullPageSpinner />
-    const subPlayers: PlayerOption[] = substitutes.map((s) => ({
-      name: s.name,
-      pairId: null,
-      photoUrl: null,
-    }))
+    if (subsLoading) return <div style={{ background: '#FBF8F0' }}><FullPageSpinner /></div>
+    const subPlayers: PlayerOption[] = substitutes.map((s) => ({ name: s.name, pairId: null, photoUrl: null }))
     const subNames = substitutes.map((s) => s.name)
     return (
-      <div className="py-6">
-        {Header}
-        <h1 className="mb-1 font-serif text-2xl font-bold text-green-800">{groupLabel(code)}</h1>
-        <p className="mb-4 text-sm text-gray-500">
-          Sostituti — solo inserimento Nearest to the Pin (Buca 2).
-        </p>
-        <NearestPinForm
-          players={subPlayers}
-          entries={ntpEntries(subNames)}
-          defaultRound={1}
-          onAdd={addNtp}
-        />
+      <div style={{ minHeight: 'calc(100vh - 64px)', background: 'radial-gradient(130% 60% at 50% 0%, #FBF8F0, #F1EADB 90%)' }}>
+        {SubHeader}
+        <div className="mx-auto max-w-[920px] px-[clamp(14px,4vw,32px)] pb-[120px] pt-[clamp(20px,4vw,34px)]">
+          <p className="mb-4 text-[13px] text-[#6B7A66]">Sostituti — solo inserimento Nearest to the Pin (Buca 2).</p>
+          <NearestPinForm players={subPlayers} entries={ntpEntries(subNames)} defaultRound={1} onAdd={addNtp} />
+        </div>
       </div>
     )
   }
 
   // ---- Normal group mode ----
-  if (pairsLoading || holesLoading) return <FullPageSpinner />
+  if (pairsLoading || holesLoading) return <div style={{ background: '#FBF8F0' }}><FullPageSpinner /></div>
 
   const groupPlayers: PlayerOption[] = groupPairs.flatMap((p) => [
     { name: p.player1_name, pairId: p.id, photoUrl: p.photo_url },
@@ -113,11 +116,9 @@ export default function ScoreEntry() {
   const groupNames = groupPlayers.map((p) => p.name)
 
   return (
-    <div className="py-6">
-      {Header}
-      <h1 className="mb-4 font-serif text-2xl font-bold text-green-800">{groupLabel(code)}</h1>
-
-      <div className="grid gap-4 lg:grid-cols-2">
+    <div style={{ minHeight: 'calc(100vh - 64px)', background: 'radial-gradient(130% 60% at 50% 0%, #FBF8F0, #F1EADB 90%)' }}>
+      {SubHeader}
+      <div className="mx-auto flex max-w-[920px] flex-col gap-[22px] px-[clamp(14px,4vw,32px)] pb-[120px] pt-[clamp(20px,4vw,34px)]">
         {groupPairs.map((pair) => (
           <ScoreTable
             key={pair.id}
@@ -135,15 +136,8 @@ export default function ScoreEntry() {
             }}
           />
         ))}
-      </div>
 
-      <div className="mt-6">
-        <NearestPinForm
-          players={groupPlayers}
-          entries={ntpEntries(groupNames)}
-          defaultRound={round}
-          onAdd={addNtp}
-        />
+        <NearestPinForm players={groupPlayers} entries={ntpEntries(groupNames)} defaultRound={round} onAdd={addNtp} />
       </div>
     </div>
   )

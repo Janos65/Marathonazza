@@ -7,94 +7,164 @@
     -webkit-text-size-adjust: 100%;
   }
   body {
-    @apply bg-cream text-ink font-sans antialiased;
+    margin: 0;
+    background: #07150d;
+    color: #f4efe3;
+    font-family: 'Hanken Grotesk', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: rgba(201, 168, 76, 0.3);
+    color: #fff;
   }
   h1,
   h2,
   h3 {
-    @apply font-serif;
+    font-family: 'Playfair Display', Georgia, serif;
   }
-  /* tabular figures for all score numbers */
+  .font-mono,
   .tnum {
     font-variant-numeric: tabular-nums;
   }
 }
 
-/* ---------- Animations (DESIGN.md) ---------- */
-@keyframes slideInRow {
+/* ---------- Broadcast keyframes (from design) ---------- */
+@keyframes mzFadeUp {
   from {
     opacity: 0;
-    transform: translateX(-16px);
+    transform: translateY(26px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
 }
-@keyframes goldPulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(201, 168, 76, 0);
+@keyframes mzFadeIn {
+  from {
+    opacity: 0;
   }
-  50% {
-    box-shadow: 0 0 16px 4px rgba(201, 168, 76, 0.3);
-  }
-}
-@keyframes borderPulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(27, 67, 50, 0);
-  }
-  50% {
-    box-shadow: 0 0 0 4px rgba(27, 67, 50, 0.3);
+  to {
+    opacity: 1;
   }
 }
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
+@keyframes mzLineGrow {
+  from {
+    transform: scaleX(0);
   }
-  20%,
-  60% {
-    transform: translateX(-6px);
-  }
-  40%,
-  80% {
-    transform: translateX(6px);
+  to {
+    transform: scaleX(1);
   }
 }
-@keyframes bounceDown {
+@keyframes mzScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+@keyframes mzBob {
   0%,
   100% {
     transform: translateY(0);
+    opacity: 0.9;
   }
   50% {
-    transform: translateY(8px);
+    transform: translateY(9px);
+    opacity: 0.4;
+  }
+}
+@keyframes mzGoldPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(201, 168, 76, 0), 0 30px 80px -30px rgba(0, 0, 0, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 60px 2px rgba(201, 168, 76, 0.28), 0 30px 80px -30px rgba(0, 0, 0, 0.7);
+  }
+}
+@keyframes mzDust {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.8;
+  }
+  88% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-150px) translateX(24px);
+    opacity: 0;
+  }
+}
+@keyframes mzRay {
+  0%,
+  100% {
+    opacity: 0.16;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+@keyframes mzBadge {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(116, 198, 157, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(116, 198, 157, 0.28);
+  }
+}
+@keyframes mzShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  18%,
+  58% {
+    transform: translateX(-8px);
+  }
+  38%,
+  78% {
+    transform: translateX(8px);
+  }
+}
+@keyframes mzToast {
+  from {
+    opacity: 0;
+    transform: translateY(16px) translateX(-50%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+  }
+}
+@keyframes mzPulseBtn {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(64, 145, 108, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(64, 145, 108, 0.32);
+  }
+}
+@keyframes mzModalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 
-.leaderboard-row {
-  animation: slideInRow 0.3s ease forwards;
-}
-.rank-1 {
-  animation: goldPulse 2s ease-in-out infinite;
-}
-.btn-submit-active {
-  animation: borderPulse 1.5s ease-in-out infinite;
-}
-.shake {
-  animation: shake 0.4s ease;
-}
-.scroll-indicator {
-  animation: bounceDown 1.8s ease-in-out infinite;
-}
-
-/* ---------- Decoration ---------- */
-.bg-golf-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='8' fill='none' stroke='%231B4332' stroke-width='0.5' opacity='0.08'/%3E%3C/svg%3E");
-}
-
-/* hide scrollbar on horizontal special-card scroller */
+/* hide scrollbar on horizontal scrollers (nav, cards) */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

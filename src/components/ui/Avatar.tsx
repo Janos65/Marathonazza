@@ -8,14 +8,16 @@ interface Props {
   /** pixel diameter */
   size?: number
   ring?: Ring
+  /** explicit ring color override (wins over `ring`) */
+  ringColor?: string
   className?: string
 }
 
-const ringColor: Record<Ring, string> = {
-  gold: '#C9A84C',
-  silver: '#A8B5A0',
-  bronze: '#C17F3A',
-  none: '#FFFFFF',
+const ringPreset: Record<Ring, string> = {
+  gold: '#E8CE7E',
+  silver: '#C9CFC4',
+  bronze: '#D69A5C',
+  none: 'rgba(201,168,76,.32)',
 }
 
 /** "Villanova / Donadini" -> "VD"; single word -> first 2 letters. */
@@ -32,11 +34,19 @@ export function initialsFromName(name: string): string {
   return name.slice(0, 2).toUpperCase()
 }
 
-export default function Avatar({ name, photoUrl, size = 40, ring = 'none', className = '' }: Props) {
+export default function Avatar({
+  name,
+  photoUrl,
+  size = 40,
+  ring = 'none',
+  ringColor,
+  className = '',
+}: Props) {
   const [errored, setErrored] = useState(false)
   const showImg = photoUrl && !errored
-  const borderWidth = ring === 'none' ? 2 : 3
-  const fontSize = Math.round(size * 0.38)
+  const border = ringColor ?? ringPreset[ring]
+  const borderWidth = ring === 'none' && !ringColor ? 1.5 : 2
+  const fontSize = Math.round(size * 0.4)
 
   return (
     <div
@@ -44,8 +54,8 @@ export default function Avatar({ name, photoUrl, size = 40, ring = 'none', class
       style={{
         width: size,
         height: size,
-        border: `${borderWidth}px solid ${ringColor[ring]}`,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+        border: `${borderWidth}px solid ${border}`,
+        boxShadow: '0 8px 20px rgba(0,0,0,0.35)',
       }}
     >
       {showImg ? (
@@ -57,8 +67,12 @@ export default function Avatar({ name, photoUrl, size = 40, ring = 'none', class
         />
       ) : (
         <div
-          className="grid h-full w-full place-items-center bg-green-700 font-sans font-semibold text-white"
-          style={{ fontSize }}
+          className="grid h-full w-full place-items-center font-serif font-bold"
+          style={{
+            background: 'linear-gradient(145deg,#2D6A4F,#16331f)',
+            color: '#EAF2E8',
+            fontSize,
+          }}
         >
           {initialsFromName(name)}
         </div>

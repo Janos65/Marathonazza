@@ -9,7 +9,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <NavBar />
-      <main className="mx-auto min-h-[calc(100vh-57px)] max-w-page px-6 pb-24 md:px-12 sm:pb-10">
+      <main>
         <Routes>
           <Route path="/" element={<Leaderboard />} />
           <Route path="/live" element={<LiveRound />} />

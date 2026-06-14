@@ -1,7 +1,5 @@
 import { useRef, useState } from 'react'
-import { Upload, MapPin } from 'lucide-react'
 import { uploadImage } from '../../lib/storage'
-import { SPECIAL_HOLES } from '../../lib/constants'
 
 const MAX = 5 * 1024 * 1024 // 5MB
 
@@ -11,12 +9,17 @@ interface Props {
   onUpload: (holeNumber: number, url: string) => Promise<void>
 }
 
+const UploadIcon = (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+  </svg>
+)
+
 export default function MapUpload({ holeNumber, mapUrl, onUpload }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [localUrl, setLocalUrl] = useState<string | null>(mapUrl)
-  const special = SPECIAL_HOLES[holeNumber]
 
   async function handleFile(file: File) {
     setError(null)
@@ -33,39 +36,25 @@ export default function MapUpload({ holeNumber, mapUrl, onUpload }: Props) {
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-green-100 bg-white">
-      <div className="relative aspect-video bg-green-50">
+    <div className="overflow-hidden rounded-[14px]" style={{ border: '1px solid #EFE9DA', background: '#FAF7EF' }}>
+      <div className="relative flex h-[84px] items-center justify-center" style={localUrl ? undefined : { background: 'repeating-linear-gradient(135deg,#EAE3D2 0 10px,#E4DCC8 10px 20px)' }}>
         {localUrl ? (
           <img src={localUrl} alt={`Mappa buca ${holeNumber}`} className="h-full w-full object-cover" />
         ) : (
-          <div className="grid h-full w-full place-items-center text-green-400">
-            <MapPin size={28} />
-          </div>
+          <span className="font-mono text-[13px] font-bold text-[#9a947f]">BUCA {holeNumber}</span>
         )}
-        <span className="absolute left-2 top-2 rounded-md bg-green-800 px-2 py-0.5 text-xs font-semibold text-white">
-          Buca {holeNumber} {special?.emoji ?? ''}
-        </span>
       </div>
-      <div className="flex items-center justify-between p-2">
-        {error ? <span className="text-xs text-error">{error}</span> : <span />}
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/jpeg,image/png"
-          className="hidden"
-          onChange={(e) => {
-            const f = e.target.files?.[0]
-            if (f) handleFile(f)
-            e.target.value = ''
-          }}
-        />
+      <div className="flex items-center justify-between gap-1 p-2.5">
+        {error ? <span className="text-[10px] text-[#C0392B]">{error}</span> : <span />}
+        <input ref={inputRef} type="file" accept="image/jpeg,image/png" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = '' }} />
         <button
           onClick={() => inputRef.current?.click()}
           disabled={busy}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-green-50 px-3 py-1.5 text-sm font-medium text-green-800 hover:bg-green-100 disabled:opacity-50"
+          className="flex items-center gap-[5px] rounded-[9px] bg-white px-3 py-[7px] text-[11.5px] font-semibold text-[#2D6A4F] transition-all hover:bg-[#1B4332] hover:text-white"
+          style={{ border: '1px solid #DCD5C4' }}
         >
-          <Upload size={15} />
-          {busy ? '...' : 'Carica mappa'}
+          {UploadIcon}
+          {busy ? '…' : 'Carica mappa'}
         </button>
       </div>
     </div>
